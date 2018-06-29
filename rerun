@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+watchdir=.
+
+while [ $# -gt 1 ]
+do
+	case "$1" in
+	--clear|-c)
+		clear=yes ;;
+	--dir|-d)
+		shift
+		watchdir=$1 ;;
+	--)
+		shift
+		command="$@"
+		break ;;
+	*)
+		command="$@"
+		break ;;
+	esac
+	shift
+done 
+
+while true
+do
+    [[ "$clear" == "yes" ]] && clear
+    bash -c "$command"
+    wait-for-file-changed "$watchdir" 2>/dev/null || break
+done
